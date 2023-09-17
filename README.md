@@ -16,6 +16,7 @@ npm i @whiskeysockets/baileys
 
 npm i qrcode-terminal
 
+npm i ytdl-core
 
 npm i mathjs
 
