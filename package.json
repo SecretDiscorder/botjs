@@ -57,6 +57,7 @@
     "follow-redirects": "^1.15.2",
     "form-data": "^4.0.0",
     "fraction.js": "^4.3.4",
+    "fs": "^0.0.1-security",
     "fs-constants": "^1.0.0",
     "fs-extra": "^10.1.0",
     "fs.realpath": "^1.0.0",
@@ -167,9 +168,9 @@
     "ws": "^8.14.1",
     "yarn": "^1.22.19",
     "yauzl": "^2.10.0",
+    "ytdl-core": "^4.11.5",
     "zip-stream": "^4.1.1"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
