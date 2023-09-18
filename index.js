@@ -4,7 +4,8 @@ const {
   Mimetype,
 	makeWASocket,
 	useMultiFileAuthState,
-	DisconnectReason,
+	DisconnectReason
+                         
 } = require('@whiskeysockets/baileys');
 const math = require('mathjs');
 const ytdl = require('ytdl-core');
@@ -56,24 +57,32 @@ async function connectToWhatsApp() {
 				const cmd = args[0]; // Mengambil perintah pertama dari pesan
 				const cmdRegex = /^!quran\s*(\d+)\s*(\d+)?\s*(juz\s*(\d+))?$/i;
 				const match = msg.message.conversation.match(cmdRegex);
-
-				// Fungsi sendQuranVerse diperbaiki
+                                const allAyats = quranAyats.getAllAyats();              
+fs.writeFileSync('ayat.json', JSON.stringify(allAyats));
+			
+ 	// Fungsi sendQuranVerse diperbaiki
 				async function sendQuranVerse(ayahNumber, surahNumber) {
 					try {
-						// Mendapatkan ayat Al-Quran berdasarkan nomor surah dan ayat
-						const ayah = quranAyats.getAyat(ayahNumber, surahNumber);
-						if (ayah) {
-							const response = `Surah ${surahNumber}, :\n${ayah.verse}`;
-							await sock.sendMessage(msg.key.remoteJid, {
-								text: response
-							});
-						} else {
-							await sock.sendMessage(msg.key.remoteJid, {
-								text: 'Ayat tidak ditemukan atau format tidak valid.'
-							});
-						}
-					} catch (error) {
-						console.error(error);
+                               
+						// Mendapatkan ayat Al-Quran berdasarkan nomor surah dan a
+const ayatData = JSON.parse(fs.readFileSync('ayat.json', 'utf8'));
+
+        // Temukan ayat berdasarkan ayahNumber dan surahNumber.
+        const ayah = ayatData.find(ayah => ayah.ayaNumber === ayahNumber && ayah.sura === surahNumber);
+
+        if (ayah) {
+            const response = `Surah ${surahNumber}, Ayah ${ayahNumber}: ${ayah.aya}`;
+            await sock.sendMessage(msg.key.remoteJid, {
+                text: response
+            });
+        } else {
+            // Teks yang akan dikirim jika ayat tidak ditemukan.
+            const notFoundResponse = "Ayat tidak ditemukan dalam database.";
+            await sock.sendMessage(msg.key.remoteJid, {
+                text: notFoundResponse
+            });
+                }					} catch (error) {
+     						console.error(error);
 						await sock.sendMessage(msg.key.remoteJid, {
 							text: `Terjadi kesalahan: ${error.message}`
 						});
@@ -98,101 +107,103 @@ async function connectToWhatsApp() {
 							});
 						}
 					case '!menu':
-						reply('*MENU BOT WA. !calculate !pangkat !sqrt !sin !cos !tan !geometri !aritmatika* penggunaan= !calculate 10%2 ');
-						break;
-
+						sock.sendMessage(msg.key.remoteJid, {text: '*MENU BOT WA. !calculate !pangkat !sqrt !sin !cos !tan !geometri !aritmatika* penggunaan= !calculate 10%2 '});
+                                                break;
+                                                                     
 					case '!calculate':
 						const expression = args.slice(1).join(' ');
 						const result = math.evaluate(expression);
-						reply(`Hasil: ${result}`);
+						sock.sendMessage(msg.key.remoteJid, {text :`Hasil: ${result}`});
 						break;
-
+           
 					case '!aritmatika':
 						if (args.length !== 4) {
-							reply('Format yang benar: !aritmatika [a] [n] [d]');
+							sock.sendMessage(msg.key.remoteJid,  {
+								text:'Format yang benar: !aritmatika [a] [n] [d]'});
 							return;
 						}
 						const a = parseFloat(args[1]);
 						const n = parseFloat(args[2]);
 						const d = parseFloat(args[3]);
 						const nthTerm = a + (n - 1) * d;
-						reply(`Suku ke-${n} dari barisan aritmatika dengan a=${a} dan d=${d} adalah ${nthTerm}`);
+						sock.sendMessage(msg.key.remoteJid, {text :`Suku ke-${n} dari barisan aritmatika dengan a=${a} dan d=${d} adalah ${nthTerm}`});
 						break;
 
 					case '!sin':
 						if (args.length !== 2) {
-							reply('Format yang benar: !sin [sudut]');
+							sock.sendMessage(msg.key.remoteJid, {
+								text:'Format yang benar: !sin [sudut]'});
 							return;
 						}
 						const sudutSin = parseFloat(args[1]);
 						try {
 							const resultSin = math.sin(sudutSin);
-							reply(`sin(${sudutSin} radian): ${resultSin}`);
+							sock.sendMessage(msg.key.remoteJid, {text: `sin(${sudutSin} radian): ${resultSin}`});
 						} catch (error) {
-							reply('Terjadi kesalahan dalam perhitungan sin.');
+							sock.sendMessage(msg.key.remoteJid, {text: 'Terjadi kesalahan dalam perhitungan sin.'});
 						}
 						break;
 
 					case '!cos':
 						if (args.length !== 2) {
-							reply('Format yang benar: !cos [sudut]');
+							sock.sendMessage(msg.key.remoteJid, {text: 'Format yang benar: !cos [sudut]'});
 							return;
 						}
 						const sudutCos = parseFloat(args[1]);
 						try {
 							const resultCos = math.cos(sudutCos);
-							reply(`cos(${sudutCos} radian): ${resultCos}`);
+							sock.sendMessage(msg.key.remoteJid, {text : `cos(${sudutCos} radian): ${resultCos}`});
 						} catch (error) {
-							reply('Terjadi kesalahan dalam perhitungan cos.');
+							sock.sendMessage(msg.key.remoteJid, {text: 'Terjadi kesalahan dalam perhitungan cos.'});
 						}
 						break;
 
 					case '!tan':
 						if (args.length !== 2) {
-							reply('Format yang benar: !tan [sudut]');
+							sock.sendMessage(msg.key.remoteJid, {text: 'Format yang benar: !tan [sudut]'});
 							return;
 						}
 						const sudutTan = parseFloat(args[1]);
 						try {
 							const resultTan = math.tan(sudutTan);
-							reply(`tan(${sudutTan} radian): ${resultTan}`);
+							sock.sendMessage(msg.key.remoteJid, {text : `tan(${sudutTan} radian): ${resultTan}`});
 						} catch (error) {
-							reply('Terjadi kesalahan dalam perhitungan tan.');
+							sock.sendMessage(msg.key.remoteJid, {text : 'Terjadi kesalahan dalam perhitungan tan.'});
 						}
 						break;
 
 					case '!pangkat':
 						if (args.length !== 3) {
-							reply('Format yang benar: !pangkat [basis] [eksponen]');
+							sock.sendMessage(msg.key.remoteJid, {text : 'Format yang benar: !pangkat [basis] [eksponen]'});
 							return;
 						}
 						const basis = parseFloat(args[1]);
 						const eksponen = parseFloat(args[2]);
 						try {
 							const resultPow = math.pow(basis, eksponen);
-							reply(`Hasil pangkat dari ${basis}^${eksponen}: ${resultPow}`);
+							sock.sendMessage(msg.key.remoteJid, {text : `Hasil pangkat dari ${basis}^${eksponen}: ${resultPow}`});
 						} catch (error) {
-							reply('Terjadi kesalahan dalam perhitungan pangkat.');
+							sock.sendMessage(msg.key.remoteJid, {text :'Terjadi kesalahan dalam perhitungan pangkat.'});
 						}
 						break;
 
 					case '!sqrt':
 						if (args.length !== 2) {
-							reply('Format yang benar: !sqrt [angka]');
+							sock.sendMessage(msg.key.remoteJid, { text :'Format yang benar: !sqrt [angka]'});
 							return;
 						}
 						const angkaSqrt = parseFloat(args[1]);
 						if (!isNaN(angkaSqrt)) {
 							const resultSqrt = math.sqrt(angkaSqrt);
-							reply(`Akar kuadrat dari ${angkaSqrt}: ${resultSqrt}`);
+							sock.sendMessage(msg.key.remoteJid, {text :`Akar kuadrat dari ${angkaSqrt}: ${resultSqrt}`});
 						} else {
-							reply('Masukkan angka yang valid.');
+							sock.sendMessage(msg.key.remoteJid, {text :'Masukkan angka yang valid.'});
 						}
 						break;
 
 					case '!youtube':
 						if (args.length !== 2) {
-							reply('Format yang benar: !youtube [URL]');
+							sock.sendMessage(msg.key.remoteJid, { text :'Format yang benar: !youtube [URL]'});
 							return;
 						}
 						const url = args[1];
@@ -201,7 +212,7 @@ async function connectToWhatsApp() {
 
 					case '!download':
 						if (args.length !== 4) {
-							reply('Format yang benar: !download [URL] [format] [filter]');
+							sock.sendMessage(msg.key.remoteJid, {text :'Format yang benar: !download [URL] [format] [filter]'});
 							return;
 						}
 						const downloadUrl = args[1];
@@ -221,3 +232,4 @@ async function connectToWhatsApp() {
 }
                           
 connectToWhatsApp();
+
