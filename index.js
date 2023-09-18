@@ -88,7 +88,94 @@ const ayatData = JSON.parse(fs.readFileSync('ayat.json', 'utf8'));
 						});
 					}
 				}
+async function detailYouTube(url) {
+						await sock.sendMessage(msg.key.remoteJid, {
+							text: '[⏳] Loading..'
+						});
+						try {
+							let info = await ytdl.getInfo(url);
+							let data = {
+								channel: {
+									name: info.videoDetails.author.name,
+									user: info.videoDetails.author.user,
+									channelUrl: info.videoDetails.author.channel_url,
+									userUrl: info.videoDetails.author.user_url,
+									verified: info.videoDetails.author.verified,
+									subscriber: info.videoDetails.author.subscriber_count,
+								},
+								video: {
+									title: info.videoDetails.title,
+									description: info.videoDetails.description,
+									lengthSeconds: info.videoDetails.lengthSeconds,
+									videoUrl: info.videoDetails.video_url,
+									publishDate: info.videoDetails.publishDate,
+									viewCount: info.videoDetails.viewCount,
+								},
+							};
+							await sock.sendMessage(msg.key.remoteJid, `*CHANNEL DETAILS*\n• Name : ${data.channel.name}\n• User : ${data.channel.user}\n• Verified : ${data.channel.verified}\n• Channel : ${data.channel.channelUrl}\n• Subscriber : ${data.channel.subscriber}`);
+							await sock.sendMessage(msg.key.remoteJid, `*VIDEO DETAILS*\n• Title : ${data.video.title}\n• Seconds : ${data.video.lengthSeconds}\n• VideoURL : ${data.video.videoUrl}\n• Publish : ${data.video.publishDate}\n• Viewers : ${data.video.viewCount}`)
+							await sock.sendMessage(msg.key.remoteJid, '*[✅]* Successfully!');
+						} catch (err) {
+							console.log(err);
+							await sock.sendMessage(msg.key.remoteJid, '*[❎]* Failed!');
+						}
+					}
 
+					async function downloadYouTube(url, format, filter) {
+						await sock.sendMessage(msg.key.remoteJid, {
+							text: '[⏳] Loading..'
+						});
+						let timeStart = Date.now();
+						try {
+							let info = await ytdl.getInfo(url);
+							let data = {
+								channel: {
+									name: info.videoDetails.author.name,
+									user: info.videoDetails.author.user,
+									channelUrl: info.videoDetails.author.channel_url,
+									userUrl: info.videoDetails.author.user_url,
+									verified: info.videoDetails.author.verified,
+									subscriber: info.videoDetails.author.subscriber_count,
+								},
+								video: {
+									title: info.videoDetails.title,
+									description: info.videoDetails.description,
+									lengthSeconds: info.videoDetails.lengthSeconds,
+									videoUrl: info.videoDetails.video_url,
+									publishDate: info.videoDetails.publishDate,
+									viewCount: info.videoDetails.viewCount,
+								},
+							};
+							ytdl(url, {
+								filter: filter,
+								format: format,
+								quality: 'highest'
+							}).pipe(fs.createWriteStream(`./download.${format}`)).on('finish', async () => {
+								let timestamp = Date.now() - timeStart;
+								const media = {
+									"filename": `download.${format}`
+								};
+
+
+								media.filename = `${config.filename.mp3}.${format}`;
+								await sock.sendMessage(msg.key.remoteJid, {
+									audio: {
+										url: 'download.mp3'
+									},
+									mimetype: 'audio/mp4'
+								});
+								await sock.sendMessage(msg.key.remoteJid, {
+									text: `• Title : ${data.video.title}\n• Channel : ${data.channel.user}\n• View Count : ${data.video.viewCount}\n• TimeStamp : ${timestamp}`
+								});
+								await sock.sendMessage(msg.key.remoteJid, {
+									text: '*[✅]* Successfully!'
+								});
+							});
+						} catch (err) {
+							console.log(err);
+							await sock.sendMessage(msg.key.remoteJid, '*[❎]* Failed!');
+						}
+					}
 				switch (cmd) {
 					case '!quran':
 						if (args.length === 3) {
@@ -233,3 +320,4 @@ const ayatData = JSON.parse(fs.readFileSync('ayat.json', 'utf8'));
                           
 connectToWhatsApp();
 
+									
