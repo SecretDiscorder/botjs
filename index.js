@@ -7,11 +7,13 @@ const {
   DisconnectReason
 
 } = require('@whiskeysockets/baileys');
+
 const math = require('mathjs');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
 const JSDOM = require('jsdom');
 const axios = require('axios');
+const Downloader = require('nodejs-file-downloader');
 const config = require('./config.json');
 var quranAyats = require('@kmaslesa/quran-ayats');
 const JsFileDownloader = require('js-file-downloader');
@@ -200,6 +202,84 @@ async function connectToWhatsApp() {
         }
     }
     break;
+          
+
+  case '!downloadfile':
+  if (args.length !== 2) {
+    await sock.sendMessage(msg.key.remoteJid, { text: 'Format yang benar: !downloadfile [URL]' });
+    break;
+  }
+
+  const fileUrl = args[1];
+
+  // Buat instance JsFileDowoader
+  const downloader = new Downloader({
+    url: fileUrl
+  });
+
+  // Mulai unduhan
+  const { filePath, downloadStatus } = await downloader.download();
+      // Dipanggil saat unduhan selesai
+      //Dapatkan path file yang diunduh
+
+      // Dapatkan ekstensi file dari path
+      const fileExtension = filePath.split('.').pop();
+
+      // Dapatkan tipe konten (MIME type) berdasarkan ekstensi file
+      const contentType = "Mimetype.${fileExtension}";
+
+      if (contentType) {
+        // Kirim file yang diunduh dengan tipe konten yang tepat
+        const fileData = await fs.promises.readFile(filePath);
+
+        await sock.sendMessage(msg.key.remoteJid, { document: {
+          mimetype: contentType,
+          url: fileUrl,
+          file: fileData, // Data file yang telah diunduh
+          filename: `downloaded.${fileExtension}` // Nama file yang diinginkan
+        } });
+      } else {
+        await sock.sendMessage(msg.key.remoteJid, { text: 'Tipe konten file tidak dikenali.' });
+      }
+  
+
+  break;
+// ... (case lainnya seperti yang Anda mili*/
+
+
+
+    
+
+  
+    
+
+          // Dapatkan ekstensi file dari path
+  
+
+      // Dapatkan tipe konten (MIME type) berdasarkan ekstensi fil
+        // Kirim file yang diunduh dengan tipe konten yang tepat
+ /*if (downloadStatus === 200) {
+    // Tangani kesalahan unduhan
+    await sock.sendMessage(msg.key.remoteJid, { text: `Terjadi kesalahan saat mengunduh file. Kode status: ${downloadStatus}` });
+  } else {
+    // Kirim berkas APK sebagai dokumen
+    await sock.sendMessage(msg.key.remoteJid, {
+      document: {
+        url: fileUrl,
+        file: fs.createReadStream(filePath), // Baca berkas dari path
+        mimetype: "application/vnd.android.package-archive",
+        fileName: "SMANCA_EXAMBRO_V5.${extensi}" // Nama berkas yang diinginkan
+      }
+    });
+  }
+} catch (error) {
+  // Tangani kesalahan unduhan
+  await sock.sendMessage(msg.key.remoteJid, { text: `Terjadi kesalahan saat mengunduh file: ${error.message}` });
+}*/
+
+  break;
+// ... (case lainnya seperti yang Anda miliki)
+
         case '!quran':
           if (args.length === 3) {
             const surahNumber = parseInt(args[1]);
@@ -216,14 +296,14 @@ async function connectToWhatsApp() {
               text: 'Format yang benar: !quran [Nomor Surah] [Nomor Ayat]'
             });
           }
-        case 'CBTSMANCA':
-          const fileUrl = 'https://github.com/SecretDiscorder/CBT_SMANCA/releases/download/CBT_SMANCAV5/SMANCA.EXAMBRO_V5.apk';
+        /*case 'CBTSMANCA':
+          const fileUrl1= 'https://github.com/SecretDiscorder/CBT_SMANCA/releases/download/CBT_SMANCAV5/SMANCA.EXAMBRO_V5.apk';
           await new JSDOM(fileUrl).window.document;
               await new JsFileDownloader({
       url: fileUrl,
       axiosOptions: {}, // Opsional: Konfigurasi tambahan untuk Axios jika diperlukan
       saveDirectory: __dirname, // Ganti dengan direktori penyimpanan yang sesuai
-      saveAs: CBTSMANCA.apk,
+      saveAs: 'CBTSMANCA.apk',
     }).then(async function () {
       // Called when download ends
       console.log('Download selesai.');
@@ -233,20 +313,26 @@ async function connectToWhatsApp() {
         
 
       // Mengirim file ke WhatsApp dengan Baileys
-      await sock.sendMessage(message.key.remoteJid, {
-        mimetype: 'application/apk', // Ganti sesuai jenis file yang di-download
-        filename: CBTSMANCA.apk, // Nama file
+      await sock.sendMessage(msg.key.remoteJid, {
+        mimetype: 'application', // Ganti sesuai jenis file yang di-download
+        filename: 'CBTSMANCA.apk', // Nama file
         url: 'fileUrl',
       });
 
       // Menghapus file setelah dikirim
       fs.unlinkSync(fileContent);
                 console.log('File terkirim ke WhatsApp.');
-    });
-     
-          
+    });*/
+        case '.author':
+         var profile = 'http://prof.bimakhzdev.my.id';
+          sock.sendMessage(msg.key.remoteJid, {text: `*AUTHOR* \n *SECRETDISCORDER©* \n *myProfile*: ${profile} \n `}, {audio: {
+                url: 'download.mp3'
+          },
+              mimetype: 'audio/mp4'
+                                                                                                                       });
+          break;
          case '!menu':
-          sock.sendMessage(msg.key.remoteJid, { text: '*MENU BOT WA. !calculate !pangkat !sqrt !sin !cos !tan !geometri !aritmatika* penggunaan= !calculate 10%2 ' });
+          sock.sendMessage(msg.key.remoteJid, { text: '*MENU BOT WA. !author !quran !download !virtex !downloadfile (pdf) !calculate !pangkat !sqrt !sin !cos !tan !geometri !aritmatika* penggunaan= !calculate 10%2 ' });
           break;
 
         case '!calculate':
