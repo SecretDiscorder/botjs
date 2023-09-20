@@ -11,16 +11,7 @@ cd botjs
 npm i node-modules
 
 
-npm i @whiskeysockets/baileys
 
-
-npm i qrcode-terminal
-
-npm i ytdl-core
-
-npm i mathjs
-
-runbot
 
 
 node .
