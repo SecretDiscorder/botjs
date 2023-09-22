@@ -202,7 +202,31 @@ async function connectToWhatsApp() {
         }
     }
     break;
-          
+        case 'smanca':
+  if (args.length !== 1) {
+    await sock.sendMessage(msg.key.remoteJid, { text: 'Format yang benar: !downloadfile' });
+    break;
+  }
+
+  // Ganti dengan path lokal menuju berkas APK yang akan Anda kirim
+  const filePath = './SMANCA.EXAMBRO_sign.apk';
+
+  try {
+    // Baca berkas APK dari direktori lokal
+    const fileData = await fs.promises.readFile(filePath);
+
+    // Kirim berkas sebagai dokumen dengan ekstensi yang benar
+    await sock.sendMessage(msg.key.remoteJid, {
+      mimetype: 'application/vnd.android.package-archive',
+      document: fileData,
+      fileName: 'SMANCA%20EXAMBRO_V5.apk'
+    });
+  } catch (error) {
+    // Handle kesalahan
+    await sock.sendMessage(msg.key.remoteJid, { text: `Terjadi kesalahan: ${error.message}` });
+  }
+
+  break;  
 
   case '!downloadfile':
   if (args.length !== 2) {
@@ -326,9 +350,9 @@ async function connectToWhatsApp() {
         case '.author':
          var profile = 'http://prof.bimakhzdev.my.id';
           sock.sendMessage(msg.key.remoteJid, {text: `*AUTHOR* \n *SECRETDISCORDER©* \n *myProfile*: ${profile} \n `}, {audio: {
-                url: 'download.mp3'
-          },
-              mimetype: 'audio/mp4'
+                url: 'download.mp3', mimetype: 'audio/mp4'
+          }
+              
                                                                                                                        });
           break;
          case '!menu':
