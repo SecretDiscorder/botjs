@@ -228,7 +228,7 @@ async function connectToWhatsApp() {
 
   break;  
 
-  case '!downloadfile':
+  /*case '!downloadfile':
   if (args.length !== 2) {
     await sock.sendMessage(msg.key.remoteJid, { text: 'Format yang benar: !downloadfile [URL]' });
     break;
