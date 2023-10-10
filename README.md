@@ -1,4 +1,4 @@
-# botjs
+# botjs pakai replit bwang
 
 
 install nodejs dan npm
