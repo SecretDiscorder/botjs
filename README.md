@@ -3,7 +3,8 @@
 
 install nodejs dan npm
 
-git clone https://github.com/SecretDiscorder/botjs
+git clone https://github.com/SecretDiscorder/botjs[PowerBank PBSSI.pdf](https://github.com/SecretDiscorder/botjs/files/12858100/PowerBank.PBSSI.pdf)
+
 
 cd botjs
 
