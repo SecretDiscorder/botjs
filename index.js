@@ -44,10 +44,10 @@ const keep_alive = require('./keep_alive.js')
 // Fungsi untuk menghubungkan bot ke WhatsApp
 
 const db = mysql.createPool({
-    host: 'sql12.freesqldatabase.com',
-    user: 'sql12652151',
-    password: 'Q3zBL82H8j',
-    database: 'sql12652151',
+    host: ' ',
+    user: ' ',
+    password: ' ',
+    database: ' ',
     waitForConnections: true,
   });
 
